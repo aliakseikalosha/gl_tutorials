@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+
 class Window {
 public:
 	Window() {
@@ -21,6 +23,7 @@ public:
 		if (!mWindow) {
 			throw std::runtime_error("Failed to create GLFW window");
 		}
+		glfwSetWindowUserPointer(mWindow, this);
 
 		glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
@@ -29,6 +32,8 @@ public:
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 			throw std::runtime_error("Failed to initialize GLAD");
 		}
+
+		glfwSwapInterval(1);
 	}
 
 	~Window() {
@@ -47,8 +52,15 @@ public:
 
 			// GLFW: swap buffers and poll IO events
 			glfwSwapBuffers(mWindow);
-			glfwPollEvents();
 		}
+	}
+
+	void onResize(std::function<void(int, int)> aOnResizeCallback) {
+		mOnResizeCallback = aOnResizeCallback;
+	}
+
+	void onCheckInput(std::function<void(GLFWwindow*)> aCheckInput) {
+		mCheckInput = aCheckInput;
 	}
 
 	double elapsedTime() const {
@@ -57,14 +69,64 @@ public:
 
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		GL_CHECK(glViewport(0, 0, width, height));
+		void * ptr = glfwGetWindowUserPointer(window);
+		if (ptr) {
+			Window *winPtr = reinterpret_cast<Window *>(ptr);
+			if (winPtr->mOnResizeCallback) {
+				winPtr->mOnResizeCallback(width, height);
+			}
+		}
+
 	}
 
 	void processInput(GLFWwindow* window) {
+		glfwPollEvents();
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			glfwSetWindowShouldClose(window, true);
 		}
+		if (mCheckInput) {
+			mCheckInput(mWindow);
+		}
+	}
+
+	float aspectRatio() const {
+		int width, height;
+		glfwGetWindowSize(mWindow, &width, &height);
+		return float(width) / height;
 	}
 
 protected:
 	GLFWwindow* mWindow;
+
+	std::function<void(int, int)> mOnResizeCallback;
+
+	std::function<void(GLFWwindow*)> mCheckInput;
+};
+
+struct MouseTracking {
+	void update(GLFWwindow *window) {
+		previousX = currentX;
+		previousY = currentY;
+		glfwGetCursorPos(window, &currentX, &currentY);
+	}
+
+	void reset() {
+		currentX = 0.0;
+		currentY = 0.0;
+
+		previousX = 0.0;
+		previousY = 0.0;
+	}
+
+	glm::vec2 offset() {
+		return glm::vec2(
+			float(currentX - previousX),
+			float(currentY - previousY));
+	}
+
+	double currentX = 0.0;
+	double currentY = 0.0;
+
+	double previousX = 0.0;
+	double previousY = 0.0;
 };
