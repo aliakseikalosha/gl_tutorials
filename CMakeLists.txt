@@ -73,7 +73,7 @@ else()
 endif()
 
 
-# add_library(utils )
+add_library(utils)
 
 # Add subdirectories here
 add_subdirectory(01_triangle)

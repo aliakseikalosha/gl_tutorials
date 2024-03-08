@@ -1,21 +1,23 @@
 #include <iostream>
 #include <cassert>
-#include <glad/glad.h>
+//#include <glad/glad.h>
+#include "../glad/include/glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <string>
 #include <vector>
 #include <array>
 
-#include "ogl_resource.hpp"
-#include "error_handling.hpp"
-#include "window.hpp"
-#include "shader.hpp"
+#include "../utils/ogl_resource.hpp"
+#include "../utils/error_handling.hpp"
+#include "../utils/window.hpp"
+#include "../utils/shader.hpp"
 
 #include "simple_scene.hpp"
 #include "renderer.hpp"
 
-#include "ogl_geometry_factory.hpp"
-#include "material_factory.hpp"
+#include "../utils/ogl_geometry_factory.hpp"
+#include "../utils/material_factory.hpp"
+#include "../utils/camera.hpp"
 
 #include <glm/gtx/string_cast.hpp>
 
