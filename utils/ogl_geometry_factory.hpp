@@ -3,16 +3,20 @@
 #include <memory>
 #include <map>
 #include <string>
+#include <filesystem>
 
 #include "geometry_factory.hpp"
 #include "ogl_resource.hpp"
+
+
+namespace fs = std::filesystem;
 
 struct IndexedBuffer {
 	OpenGLResource vbo;
 	OpenGLResource ebo;
 	OpenGLResource vao;
 
-	int indexCount;
+	unsigned int indexCount = 0;
 	GLenum mode = GL_TRIANGLES;
 };
 
@@ -36,6 +40,10 @@ public:
 class OGLGeometryFactory: public GeometryFactory {
 public:
 	std::shared_ptr<AGeometry> getCube();
+	std::shared_ptr<AGeometry> getCubeOutline();
+	std::shared_ptr<AGeometry> getCubeNormTex();
+
+	std::shared_ptr<AGeometry> loadMesh(fs::path aMeshPath, RenderStyle aRenderStyle);
 protected:
 	std::map<std::string, std::shared_ptr<OGLGeometry>> mObjects;
 };
