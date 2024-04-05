@@ -32,31 +32,41 @@ inline constexpr bool always_false_v = false;
 
 inline int setUniform(const UniformInfo &aInfo, const MaterialParam &aParam, int aNextTexturingUnit) {
 	std::visit([&aInfo, &aNextTexturingUnit](auto&& arg) {
-		using T = std::decay_t<decltype(arg)>;
-		if constexpr (std::is_same_v<T, float>) {
-			GL_CHECK(glUniform1f(aInfo.location, arg));
-		} else if constexpr (std::is_same_v<T, glm::vec2>) {
-			GL_CHECK(glUniform2fv(aInfo.location, 1, glm::value_ptr(arg)));
-		} else if constexpr (std::is_same_v<T, glm::vec3>) {
-			GL_CHECK(glUniform3fv(aInfo.location, 1, glm::value_ptr(arg)));
-		} else if constexpr (std::is_same_v<T, glm::vec4>) {
-			GL_CHECK(glUniform4fv(aInfo.location, 1, glm::value_ptr(arg)));
-		} else if constexpr (std::is_same_v<T, glm::mat3>) {
-			GL_CHECK(glUniformMatrix3fv(aInfo.location, 1, GL_FALSE, glm::value_ptr(arg)));
-		} else if constexpr (std::is_same_v<T, glm::mat4>) {
-			GL_CHECK(glUniformMatrix4fv(aInfo.location, 1, GL_FALSE, glm::value_ptr(arg)));
-		} else if constexpr (std::is_same_v<T, TextureInfo>) {
-			if (arg.textureData) {
-				GL_CHECK(glActiveTexture(GL_TEXTURE0 + aNextTexturingUnit));
-				const OGLTexture &texture = static_cast<const OGLTexture &>(*arg.textureData);
+		try {
+			using T = std::decay_t<decltype(arg)>;
+			if constexpr (std::is_same_v<T, int>) {
+				GL_CHECK(glUniform1i(aInfo.location, arg));
+			} else 	if constexpr (std::is_same_v<T, unsigned int>) {
+				GL_CHECK(glUniform1ui(aInfo.location, arg));
+			} else if constexpr (std::is_same_v<T, float>) {
+				GL_CHECK(glUniform1f(aInfo.location, arg));
+			} else if constexpr (std::is_same_v<T, glm::vec2>) {
+				GL_CHECK(glUniform2fv(aInfo.location, 1, glm::value_ptr(arg)));
+			} else if constexpr (std::is_same_v<T, glm::vec3>) {
+				GL_CHECK(glUniform3fv(aInfo.location, 1, glm::value_ptr(arg)));
+			} else if constexpr (std::is_same_v<T, glm::vec4>) {
+				GL_CHECK(glUniform4fv(aInfo.location, 1, glm::value_ptr(arg)));
+			} else if constexpr (std::is_same_v<T, glm::mat3>) {
+				GL_CHECK(glUniformMatrix3fv(aInfo.location, 1, GL_FALSE, glm::value_ptr(arg)));
+			} else if constexpr (std::is_same_v<T, glm::mat4>) {
+				GL_CHECK(glUniformMatrix4fv(aInfo.location, 1, GL_FALSE, glm::value_ptr(arg)));
+			} else if constexpr (std::is_same_v<T, TextureInfo>) {
+				if (arg.textureData) {
+					GL_CHECK(glActiveTexture(GL_TEXTURE0 + aNextTexturingUnit));
+					const OGLTexture &texture = static_cast<const OGLTexture &>(*arg.textureData);
 
-				GL_CHECK(glBindTexture(GL_TEXTURE_2D, texture.texture.get()));
-				GL_CHECK(glUniform1i(aInfo.location, aNextTexturingUnit));
-				++aNextTexturingUnit;
+					GL_CHECK(glBindTexture(GL_TEXTURE_2D, texture.texture.get()));
+					GL_CHECK(glUniform1i(aInfo.location, aNextTexturingUnit));
+					++aNextTexturingUnit;
+				}
+			} else {
+				static_assert(always_false_v<T>, "non-exhaustive visitor!");
 			}
-		} else {
-			static_assert(always_false_v<T>, "non-exhaustive visitor!");
-		}},
+		} catch (OpenGLError &exc) {
+			std::cerr << "Error when setting uniform " << aInfo.name << "\n";
+			throw;
+		}
+		},
 		aParam);
 	return aNextTexturingUnit;
 }
@@ -119,7 +129,7 @@ public:
 	};
 
 	std::shared_ptr<ATexture> getTexture(const std::string &aName) {
-		auto it = mTextures.find(aName);
+		auto it = mTextures.find(convertToIdentifier(aName));
 		if (it == mTextures.end()) {
 			throw OpenGLError("Texture " + aName + " not found");
 		}

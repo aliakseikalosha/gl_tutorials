@@ -3,23 +3,14 @@
 #include <memory>
 #include <map>
 #include <string>
+#include <iostream>
 #include <filesystem>
 
 #include "geometry_factory.hpp"
-#include "ogl_resource.hpp"
+#include "ogl_geometry_construction.hpp"
 
 
 namespace fs = std::filesystem;
-
-struct IndexedBuffer {
-	OpenGLResource vbo;
-	OpenGLResource ebo;
-	OpenGLResource vao;
-
-	unsigned int indexCount = 0;
-	GLenum mode = GL_TRIANGLES;
-};
-
 
 class OGLGeometry: public AGeometry {
 public:
@@ -33,12 +24,21 @@ public:
 	}
 
 	void draw() const {
-  		GL_CHECK(glDrawElements(buffer.mode, buffer.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(0)));
+		draw(buffer.mode);
+	}
+
+	void draw(GLenum aMode) const {
+		if (buffer.instanceCount == 0) {
+			GL_CHECK(glDrawElements(aMode, buffer.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(0)));
+		} else {
+			GL_CHECK(glDrawElementsInstanced(aMode, buffer.indexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(0), buffer.instanceCount));
+		}
 	}
 };
 
 class OGLGeometryFactory: public GeometryFactory {
 public:
+	std::shared_ptr<AGeometry> getAxisGizmo();
 	std::shared_ptr<AGeometry> getCube();
 	std::shared_ptr<AGeometry> getCubeOutline();
 	std::shared_ptr<AGeometry> getCubeNormTex();

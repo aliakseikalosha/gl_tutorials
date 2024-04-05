@@ -69,13 +69,14 @@ if(WIN32)
 else()
 	find_package(glfw3 3.3 REQUIRED)
 	find_package(glm REQUIRED)
-	add_compile_definitions("-DGLM_FORCE_SWIZZLE")
+	add_compile_definitions("GLM_FORCE_SWIZZLE")
 endif()
 
 
-add_library(utils STATIC
+add_library(utils
 	utils/ogl_material_factory.cpp
 	utils/ogl_geometry_factory.cpp	
+	utils/ogl_geometry_construction.cpp	
 	utils/obj_file_loading.cpp	
 	)
 target_link_libraries(utils glm::glm glfw OpenGL::GL)
@@ -89,4 +90,6 @@ target_include_directories(utils PUBLIC
 add_subdirectory(01_triangle)
 add_subdirectory(02_simple3d)
 add_subdirectory(03_textures)
+add_subdirectory(04_deffered)
+add_subdirectory(05_shaders)
 

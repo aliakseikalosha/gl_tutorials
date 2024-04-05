@@ -23,13 +23,16 @@ struct TextureInfo {
 };
 
 using MaterialParam = std::variant<
+				int,
+				unsigned int,
 				float,
 				glm::vec2,
 				glm::vec3,
 				glm::vec4,
 				glm::mat3,
 				glm::mat4,
-				TextureInfo>;
+				TextureInfo
+				>;
 using MaterialParameterValues = std::map<std::string, MaterialParam>;
 
 enum class RenderStyle {
@@ -41,16 +44,19 @@ class MaterialParameters {
 public:
 	MaterialParameters()
        		: mRenderStyle(RenderStyle::Solid)
+		, mIsTesselation(false)
 	{}
-	MaterialParameters(const std::string &aMaterialName, RenderStyle aRenderStyle, const MaterialParameterValues &aParameterValues)
+	MaterialParameters(const std::string &aMaterialName, RenderStyle aRenderStyle, const MaterialParameterValues &aParameterValues, bool aIsTesselation = false)
 		: mMaterialName(aMaterialName)
 		, mRenderStyle(aRenderStyle)
 		, mParameterValues(aParameterValues)
+		, mIsTesselation(aIsTesselation)
 	{}
 
 	std::string mMaterialName;
 	RenderStyle mRenderStyle;
 	MaterialParameterValues mParameterValues;
+	bool mIsTesselation;
 };
 
 class AShaderProgram {
@@ -58,6 +64,11 @@ public:
 	AShaderProgram() {}
 	virtual ~AShaderProgram() {}
 };
+
+inline std::string convertToIdentifier(std::string aId) {
+	std::replace(aId.begin(), aId.end(), '\\', '/');
+	return aId;
+}
 
 class MaterialFactory {
 public:

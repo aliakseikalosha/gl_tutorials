@@ -14,28 +14,32 @@
 
 inline SimpleScene createCubeScene(MaterialFactory &aMaterialFactory, GeometryFactory &aGeometryFactory) {
 	SimpleScene scene;
-	auto cube = std::make_shared<Cube>();
+	// auto cube = std::make_shared<Cube>();
+        //
+	// cube->setName("CUBE");
+	// cube->addMaterial(
+	// 	"solid",
+	// 	MaterialParameters(
+	// 		"normal_to_color",
+	// 		RenderStyle::Solid,
+	// 		{}
+	// 		)
+	// 	);
+	// cube->addMaterial(
+	// 	"wireframe",
+	// 	MaterialParameters(
+	// 		"solid_color",
+	// 		RenderStyle::Wireframe,
+	// 		{}
+	// 		)
+	// 	);
+	// cube->prepareRenderData(aMaterialFactory, aGeometryFactory);
+	auto gizmo = std::make_shared<AxisGizmo>();
+	gizmo->prepareRenderData(aMaterialFactory, aGeometryFactory);
+	scene.addObject(gizmo);
 
-	cube->setName("CUBE");
-	cube->addMaterial(
-		"solid",
-		MaterialParameters(
-			"normal_to_color",
-			RenderStyle::Solid,
-			{}
-			)
-		);
-	cube->addMaterial(
-		"wireframe",
-		MaterialParameters(
-			"solid_color",
-			RenderStyle::Wireframe,
-			{}
-			)
-		);
-	cube->prepareRenderData(aMaterialFactory, aGeometryFactory);
 
-	scene.addObject(cube);
+	// scene.addObject(cube);
 	return scene;
 }
 
@@ -91,7 +95,16 @@ inline SimpleScene createMonkeyScene(MaterialFactory &aMaterialFactory, Geometry
 		MaterialParameters(
 			"phong",
 			RenderStyle::Solid,
-			{}
+			{
+				{ "light.ambient", glm::vec3(0.3, 0.3, 0.3) },
+				{ "light.diffuse", glm::vec3(0.6, 0.6, 0.6) },
+				{ "light.position", glm::vec3(3.0, 5.0, 6.0) },
+				{ "light.specular", glm::vec3(1.0, 1.0, 1.0) },
+				{ "material.ambient", glm::vec3(0.1, 0.1, 0.1) },
+				{ "material.diffuse", glm::vec3(1.0, 0.5, 0.31) },
+				{ "material.shininess", 32.0f },
+				{ "material.specular", glm::vec3(0.5, 0.5, 0.5) },
+			}
 			)
 		);
 	mesh->addMaterial(

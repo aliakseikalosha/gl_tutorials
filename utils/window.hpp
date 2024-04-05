@@ -5,6 +5,7 @@
 #include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <array>
 
 #include <glm/glm.hpp>
 
@@ -40,6 +41,12 @@ public:
 
 	~Window() {
 
+	}
+
+	std::array<int, 2> size() {
+		std::array<int, 2> result{0};
+		glfwGetWindowSize(mWindow, &(result[0]), &(result[1]));
+		return result;
 	}
 
 	void makeCurrent() {
