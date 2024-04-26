@@ -10,3 +10,9 @@ cmake-build-debug/
 *.swm
 *.swl
 *.swk
+
+cmake-build-debug_clang/
+
+.DS_Store
+
+cmake-build-debug_gcc/

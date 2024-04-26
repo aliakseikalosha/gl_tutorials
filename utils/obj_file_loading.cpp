@@ -1,3 +1,4 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include "obj_file_loading.hpp"
 
 #include <fstream>

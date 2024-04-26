@@ -1,6 +1,6 @@
 #pragma once
 
-#include <filesystem>
+#include <boost/filesystem.hpp>
 #include <regex>
 #include <map>
 #include <variant>
@@ -12,9 +12,9 @@
 #include "shader.hpp"
 #include "material_factory.hpp"
 
-namespace fs = std::filesystem;
+//namespace fs = boost::filesystem;
 
-using ShaderFiles = std::map<std::string, fs::path>;
+using ShaderFiles = std::map<std::string, boost::filesystem::path>;
 using ShaderProgramFiles = std::map<std::string, ShaderFiles>;
 
 class OGLTexture: public ATexture {

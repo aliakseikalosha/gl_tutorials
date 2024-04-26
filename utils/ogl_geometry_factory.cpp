@@ -1,3 +1,4 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include "ogl_geometry_factory.hpp"
 
 #include <glm/gtx/string_cast.hpp>

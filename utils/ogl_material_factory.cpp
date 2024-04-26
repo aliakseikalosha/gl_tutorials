@@ -1,3 +1,4 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include "ogl_material_factory.hpp"
 #include <iostream>
 #include <ranges>

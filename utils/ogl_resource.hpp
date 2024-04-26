@@ -15,8 +15,8 @@ public:
 	OpenGLResource(
 		std::function<GLuint()> aCreateFunc,
 		std::function<void(GLuint)> aDeleteFunc)
-		: mCreateFunc(aCreateFunc)
-		, mDeleteFunc(aDeleteFunc)
+		: mCreateFunc(std::move(aCreateFunc))
+		, mDeleteFunc(std::move(aDeleteFunc))
 	{
 		mId = mCreateFunc();
 	}
